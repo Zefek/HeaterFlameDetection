@@ -1,0 +1,30 @@
+name: Build HeaterFlameDetection on Environment
+
+on:
+  deployment:
+
+jobs:
+  build:
+    runs-on: [self-hosted, iot]
+    environment: Home
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Initialize Arduino CLI
+        run: |
+          & "$Env:RUNNER_TOOL_CACHE\arduino-cli\arduino-cli.exe" --config-file "$Env:RUNNER_TOOL_CACHE\arduino-cli\config.yaml" core update-index
+
+      - name: Install required board core
+        run: |
+          & "$Env:RUNNER_TOOL_CACHE\arduino-cli\arduino-cli.exe" --config-file "$Env:RUNNER_TOOL_CACHE\arduino-cli\config.yaml" core install arduino:avr
+
+      - name: Compile Arduino project
+        run: |
+          & "$Env:RUNNER_TOOL_CACHE\arduino-cli\arduino-cli.exe" --config-file "$Env:RUNNER_TOOL_CACHE\arduino-cli\config.yaml" compile --fqbn arduino:avr:nano ./HeaterFlameDetection --output-dir build
+
+      - name: Upload firmware to Arduino
+        run: |
+          $port = "${{ github.event.deployment.payload.serial_port }}"
+          & "$Env:RUNNER_TOOL_CACHE\arduino-cli\arduino-cli.exe" --config-file "$Env:RUNNER_TOOL_CACHE\arduino-cli\config.yaml" upload --fqbn arduino:avr:nano --port $port --input-dir build
