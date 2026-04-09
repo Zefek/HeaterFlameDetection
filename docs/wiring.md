@@ -53,6 +53,24 @@ Když D2 = LOW, relé sepne a termostat je přemostěn.
 - Spalinový termostat obvykle spíná ventilátor/laddomat na síťovém napětí. Kontakty relé musí unést proud ventilátoru (typicky do 1 A, ale kontroluj štítek).
 - Napájení relé modulu ze stejného 5 V jako Nano. Pokud by byl ventilátor induktivní zátěž a relé jiskřilo, doplň RC snubber na kontaktech.
 
+#### Alternativa: SSR (Solid State Relay)
+
+Místo klasického mechanického relé je v tomhle použití často lepší volba **SSR** (např. Fotek SSR-25 DA, nebo malé moduly s Omron G3MB-202P pro DC / AC zátěž). Důvody:
+
+- **Žádné mechanické kontakty** → prakticky neomezená životnost, pro zařízení, které v topné sezóně spíná mnohokrát denně, je to podstatný rozdíl.
+- **Žádné jiskření** → nevadí induktivní zátěž ventilátoru, nehrozí přivaření kontaktů.
+- **Tichý provoz** → nic nekliká, vhodné do obytného prostoru.
+- **Rychlé spínání** → nerelevantní pro tuhle aplikaci, ale přijde to zdarma.
+
+**Na co si dát pozor u SSR:**
+- SSR má **polaritu** na výstupu, pokud jde o AC vs. DC typ. Pro spínání ventilátoru / laddomatu kotle potřebuješ **AC typ** (většina modulů s logem "DA" — DC řídicí vstup, AC výstup).
+- Při spínání síťové zátěže potřebuje SSR **chladič** — při cca 1 A ventilátoru to není kritické, ale pro vyšší proudy je nutný.
+- SSR má v sepnutém stavu **úbytek napětí** (typicky 1–1,5 V) a tedy malou klidovou ztrátu — u 1 A to je pár wattů tepla, proto ten chladič.
+- Některé SSR mají **minimální zátěžový proud** (např. 100 mA) — pokud bys jím spínal jen cívku stykače, zkontroluj datasheet.
+- Zapojení z Nano je triviální: `D2` → `+` vstupu SSR, `GND` → `−`. Malé SSR moduly typu G3MB-202P rovnou akceptují 3,3–5 V logiku a mají optočlen uvnitř, nepotřebují vlastní napájení.
+
+Pro začátečníka a minimální cenu stačí klasické relé modul z aliexpressu, ale pokud chceš "zapoj a zapomeň" řešení, SSR je lepší investice.
+
 ### 3. LED indikátory
 
 Dvě standardní 5 mm LED přes rezistory:

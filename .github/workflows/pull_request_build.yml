@@ -31,7 +31,7 @@ jobs:
       - name: Static analysis
         run: |
           sudo apt-get install -y cppcheck
-          cppcheck --enable=all --language=c++ --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=cstyleCast --suppress=unsignedLessThanZero --suppress=unsignedPositive --suppress=checkersReport --error-exitcode=1 HeaterFlameDetection/*.ino HeaterFlameDetection/*.h
+          cppcheck --enable=all --language=c++ --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=checkersReport --error-exitcode=1 HeaterFlameDetection/*.ino HeaterFlameDetection/*.h
 
       - name: Compile Arduino project
         run: |
