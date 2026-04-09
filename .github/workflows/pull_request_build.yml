@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL: "true"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          sudo mv bin/arduino-cli /usr/local/bin/
+
+      - name: Initialize Arduino CLI
+        run: |
+          arduino-cli config init
+          arduino-cli core update-index
+
+      - name: Install required board core
+        run: arduino-cli core install arduino:avr
+
+      - name: Static analysis
+        run: |
+          sudo apt-get install -y cppcheck
+          cppcheck --enable=all --language=c++ --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=checkersReport --error-exitcode=1 HeaterFlameDetection/*.ino HeaterFlameDetection/*.h
+
+      - name: Compile Arduino project
+        run: |
+          arduino-cli compile --fqbn arduino:avr:nano ./HeaterFlameDetection
