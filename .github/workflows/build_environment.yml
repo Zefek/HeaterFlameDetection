@@ -1,7 +1,16 @@
 name: Build HeaterFlameDetection on Environment
 
 on:
-  deployment:
+   workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        type: choice
+        options:
+          - Home
+      serial_port:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -10,7 +19,7 @@ permissions:
 jobs:
   build:
     runs-on: [self-hosted, iot]
-    environment: Home
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Checkout repository
@@ -30,7 +39,7 @@ jobs:
 
       - name: Upload firmware to Arduino
         env:
-          SERIAL_PORT: ${{ github.event.deployment.payload.serial_port }}
+          SERIAL_PORT: ${{ github.event.inputs.serial_port }}
         run: |
           if ($env:SERIAL_PORT -notmatch '^COM\d+$') {
             Write-Error "Invalid serial port format: $env:SERIAL_PORT"
